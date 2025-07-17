@@ -26,7 +26,7 @@ Mortgage::Mortgage() {
     total_years_to_repay = 0;
     number_of_payments = 0;
 
-    cout << "INFO: Executing constructor for Mortgage class." << endl;
+    cout << "\nINFO: executing constructor for Mortgage class." << endl;
 }
 
 /*
@@ -69,7 +69,7 @@ void Mortgage::setLoanAmount(double amount) {
         Sets the yearly interest rate and figures out the monthly rate.
  */
 void Mortgage::setAnnualInterestRate(double rate) {
-    annual_interest_rate = rate;
+    annual_interest_rate = rate / 100.0;
     monthly_interest_rate = annual_interest_rate / 12.0;
 }
 
@@ -145,28 +145,45 @@ void Mortgage::outputPaymentSchedule(const string& filename) const {
     double balance = loan_amount;
     double monthly_payment = getMonthlyPayment();
 
-    outFile << fixed << setprecision(2);
+    constexpr int padding = 4;  // Space between columns
+    constexpr int widthPmtNum = 6 + padding;       // Width for "Pmt#"
+    constexpr int widthPayment = 16 + padding;     // Width for "Payment Amount"
+    constexpr int widthInterest = 12 + padding;    // Width for "Interest"
+    constexpr int widthPrincipal = 12 + padding;   // Width for "Principal"
+    constexpr int widthBalance = 20 + padding;     // Width for "Remaining Balance"
+
+    outFile << fixed << showpoint << setprecision(2);
     outFile << "Loan Amount: $" << loan_amount << endl;
-    outFile << "Annual Interest Rate: " << annual_interest_rate << endl;
+    outFile << "Annual Interest Rate: " << (annual_interest_rate * 100) << "%" << endl;
     outFile << "Years to repay: " << total_years_to_repay << endl;
     outFile << "Monthly Payment: $" << monthly_payment << endl;
     outFile << "Total Pay Back: $" << getTotalPayback() << endl << endl;
 
-    outFile << "Pmt#\tPayment Amount\tInterest\tPrincipal\tRemaining Balance" << endl;
+    // Output headers (left aligned)
+    outFile << left
+            << setw(widthPmtNum)    << "Pmt#"
+            << setw(widthPayment)   << "Payment Amount"
+            << setw(widthInterest)  << "Interest"
+            << setw(widthPrincipal) << "Principal"
+            << setw(widthBalance)   << "Remaining Balance"
+            << endl;
 
-    for (int pmt_number = 1; pmt_number <= number_of_payments; ++pmt_number) {
+    // Output data rows (right aligned)
+    for (int pmt_number = 1; pmt_number <= number_of_payments; pmt_number++) {
         double interest = monthly_interest_rate * balance;
         double principal = monthly_payment - interest;
         balance -= principal;
+        if (balance < 0.0) balance = 0.0;
 
-        if (balance < 0.0) balance = 0.0; // safeguard against negative due to floating point
-
-        outFile << pmt_number << "\t"
-                << monthly_payment << "\t\t"
-                << interest << "\t\t"
-                << principal << "\t\t"
-                << balance << endl;
+        outFile << right
+                << setw(widthPmtNum)    << pmt_number
+                << setw(widthPayment)   << monthly_payment
+                << setw(widthInterest)  << interest
+                << setw(widthPrincipal) << principal
+                << setw(widthBalance)   << balance
+                << endl;
     }
 
     outFile.close();
+
 }
