@@ -1,0 +1,51 @@
+# JetBrains/CLion project files
+.idea/
+
+# Build directories
+cmake-build-*/
+build/
+bin/
+
+# Compiled Object files
+*.o
+*.obj
+*.slo
+*.lo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Libraries
+*.a
+*.lib
+*.lai
+*.la
+*.so
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Linker & Debugger files
+*.ilk
+*.pdb
+*.dwo
+
+# Fortran module files (if any)
+*.mod
+*.smod
+
+# Dependency files
+*.d
+
+# Logs, temp files, OS junk
+*.log
+*.tmp
+*.swp
+*~
+.DS_Store
+Thumbs.db
