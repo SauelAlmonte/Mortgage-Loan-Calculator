@@ -116,8 +116,6 @@ Total Pay Back:           $469482.60
 Pmt#    Payment Amount    Interest    Principal    Remaining Balance
    1           1304.12       989.58       314.54           249685.46
    2           1304.12       988.34       315.78           249369.68
-...         ...           ...          ...              ...
- 360           1304.12         5.14      1298.98                0.00
 
 ```
 
