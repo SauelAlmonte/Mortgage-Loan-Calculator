@@ -67,19 +67,15 @@ int main() {
         cout << fixed << showpoint << setprecision(2);
 
         cout << "\nLoan Amount:"
-             << setw(15) << "$" << amount << endl;
-
-        cout << "Annual Interest Rate:"
-             << right << setw(9) << rate << "%" << endl;
-
-        cout << "Years to repay:"
-             << setw(13) << years << endl;
-
-        cout << "Monthly Payment:"
-             << setw(11) << "$" << loan.getMonthlyPayment() << endl;
-
-        cout << "Total Pay Back:"
-             << setw(12) << "$" << loan.getTotalPayback() << endl;
+            << setw(15) << "$" << amount << "\n"
+            << "Annual Interest Rate:"
+            << right << setw(9) << rate << "%" << "\n"
+            << "Years to repay:"
+            << setw(13) << years << "\n"
+            << "Monthly Payment:"
+            << setw(11) << "$" << loan.getMonthlyPayment() << "\n"
+            << "Total Pay Back:"
+            << setw(12) << "$" << loan.getTotalPayback() << endl;
 
         // Optional: Prompt to generate the payment schedule
         char generateSchedule;

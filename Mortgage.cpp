@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <cmath>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -126,62 +127,116 @@ double Mortgage::getTotalPayback() const {
     Output Payment Schedule (Extra Credit)
 
     Programmer's Note:
-        - Writes a detailed amortization schedule to a specified text file.
+        - Writes a formatted, column-aligned amortization schedule to a specified text file.
         - Includes payment number, monthly payment, interest, principal, and remaining balance.
-        - Ensures balance doesn't drop below zero due to rounding.
+        - Prevents the remaining balance from dropping below zero due to rounding.
 
     Simpler Terms:
-        Saves a payment plan to a text file that shows what part of each monthly payment
-        goes to interest, what reduces the loan, and how much is left to pay.
+        Saves a monthly payment plan to a file that shows:
+        - How much of each payment goes toward interest.
+        - How much reduces the original loan.
+        - How much is still left to pay after each month.
  */
 void Mortgage::outputPaymentSchedule(const string& filename) const {
+    // Creates and open the output file stream with the specified filename
     ofstream outFile(filename);
 
+    // Checks if the file failed to open
     if (!outFile) {
+        // Displays an error message to standard error output
         cerr << "ERROR: Could not open file " << filename << " for writing." << endl;
+        // Exit the function early since writing to the file is not possible
         return;
     }
+
+    const string bannerMessage = " Mortgage Payment Schedule ";
+    constexpr int bannerWidth = 60;  // Adjust width as needed
+
+    outFile << setfill('=') << setw(bannerWidth) << "=" << setfill(' ')<< "\n"
+        << setw(static_cast<int>((bannerWidth + bannerMessage.length()) / 2))
+        << bannerMessage << endl;
+    outFile << setfill('=') << setw(bannerWidth) << "=" << endl << endl;
+
+    // Reset fill for normal output
+    outFile << setfill(' ');
 
     double balance = loan_amount;
     double monthly_payment = getMonthlyPayment();
 
-    constexpr int padding = 4;  // Space between columns
-    constexpr int widthPmtNum = 6 + padding;       // Width for "Pmt#"
-    constexpr int widthPayment = 16 + padding;     // Width for "Payment Amount"
-    constexpr int widthInterest = 12 + padding;    // Width for "Interest"
-    constexpr int widthPrincipal = 12 + padding;   // Width for "Principal"
-    constexpr int widthBalance = 20 + padding;     // Width for "Remaining Balance"
-
     outFile << fixed << showpoint << setprecision(2);
-    outFile << "Loan Amount: $" << loan_amount << endl;
-    outFile << "Annual Interest Rate: " << (annual_interest_rate * 100) << "%" << endl;
-    outFile << "Years to repay: " << total_years_to_repay << endl;
-    outFile << "Monthly Payment: $" << monthly_payment << endl;
-    outFile << "Total Pay Back: $" << getTotalPayback() << endl << endl;
 
-    // Output headers (left aligned)
-    outFile << left
-            << setw(widthPmtNum)    << "Pmt#"
-            << setw(widthPayment)   << "Payment Amount"
-            << setw(widthInterest)  << "Interest"
-            << setw(widthPrincipal) << "Principal"
-            << setw(widthBalance)   << "Remaining Balance"
-            << endl;
+    outFile << "Loan Amount:"
+            << setw(15) << "$" << loan_amount << "\n"
+            << "Annual Interest Rate:"
+            << right << setw(9) << (annual_interest_rate * 100) << "%" << "\n"
+            << "Years to repay:"
+            << setw(13) << total_years_to_repay << "\n"
+            << "Monthly Payment:"
+            << setw(11) << "$" << monthly_payment << "\n"
+            << "Total Pay Back:"
+            << setw(12) << "$" << getTotalPayback() << endl << endl;
 
-    // Output data rows (right aligned)
-    for (int pmt_number = 1; pmt_number <= number_of_payments; pmt_number++) {
+    constexpr int padding = 4;  // Space between columns
+    vector<string> headers = { "Pmt#", "Payment Amount", "Interest", "Principal", "Remaining Balance" };
+
+    vector<int> columnWidths(headers.size());
+    for (unsigned int i = 0; i < headers.size(); ++i) {
+        columnWidths[i] = static_cast<int>(headers[i].length());
+    }
+
+    for (int pmt_number = 1; pmt_number <= number_of_payments; ++pmt_number) {
         double interest = monthly_interest_rate * balance;
         double principal = monthly_payment - interest;
         balance -= principal;
         if (balance < 0.0) balance = 0.0;
 
-        outFile << right
-                << setw(widthPmtNum)    << pmt_number
-                << setw(widthPayment)   << monthly_payment
-                << setw(widthInterest)  << interest
-                << setw(widthPrincipal) << principal
-                << setw(widthBalance)   << balance
-                << endl;
+        // Check and update width per column
+        if (static_cast<int>(to_string(pmt_number).length()) > columnWidths[0]) {
+            columnWidths[0] = static_cast<int>(to_string(pmt_number).length());
+        }
+
+        if (static_cast<int>(to_string(monthly_payment).length()) > columnWidths[1]) {
+            columnWidths[1] = static_cast<int>(to_string(monthly_payment).length());
+        }
+
+        if (static_cast<int>(to_string(interest).length()) > columnWidths[2]) {
+            columnWidths[2] = static_cast<int>(to_string(interest).length());
+        }
+
+        if (static_cast<int>(to_string(principal).length()) > columnWidths[3]) {
+            columnWidths[3] = static_cast<int>(to_string(principal).length());
+        }
+
+        if (static_cast<int>(to_string(balance).length()) > columnWidths[4]) {
+            columnWidths[4] = static_cast<int>(to_string(balance).length());
+        }
+    }
+
+    outFile << left;
+    for (const auto& header : headers) {
+        outFile << setw(static_cast<int>(header.length()) + padding) << header;
+    }
+    outFile << endl;
+
+    outFile << right;
+
+    // Reset balance before outputting
+    balance = loan_amount;
+
+    for (int pmt_number = 1; pmt_number <= number_of_payments; ++pmt_number) {
+        double interest = monthly_interest_rate * balance;
+        double principal = monthly_payment - interest;
+        balance -= principal;
+        if (balance < 0.0) balance = 0.0;
+
+        outFile
+            << setw(static_cast<int>(headers[0].length())) << pmt_number << string(padding, ' ')
+            << setw(static_cast<int>(headers[1].length())) << monthly_payment << string(padding, ' ')
+            << setw(static_cast<int>(headers[2].length())) << interest << string(padding, ' ')
+            << setw(static_cast<int>(headers[3].length())) << principal << string(padding, ' ')
+            << setw(static_cast<int>(headers[4].length())) << balance
+            << endl;
+
     }
 
     outFile.close();
