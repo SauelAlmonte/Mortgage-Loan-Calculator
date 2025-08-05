@@ -122,8 +122,10 @@ Pmt#    Payment Amount    Interest    Principal    Remaining Balance
 ---
 
 ## License
-This project is licensed under the MIT License.  
-You are free to use, modify, and distribute this software with proper attribution.
+This project is licensed under the [MIT License](LICENSE).  
+This project is for academic and personal educational use only.
+© 2025 Sauel Almonte. All rights reserved.
+Do not redistribute or use commercially without explicit permission.
 
 #### Disclaimer
 This project is provided "as is" without any warranties or guarantees.  
