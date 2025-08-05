@@ -5,8 +5,8 @@ A C++ program that calculates fixed-rate mortgage payments and generates a detai
 ---
 
 ### Author
-**Sauel Almonte**  
-[LinkedIn Profile](https://www.linkedin.com/in/sauel-almonte)
+[Sauel Almonte](https://www.linkedin.com/in/sauel-almonte)  
+[My Portfolio](https://s-almonte.vercel.app/)
 
 ---
 
